@@ -27,7 +27,7 @@
             padding: 24px; 
         }
         
-        /* Butter-Smooth Continuous Scrolling Ticker Loop */
+        /* Continuous Scrolling Ticker Loop - Slowed Down, No Hover-Pause */
         .ticker-wrap { 
             width: 100%; 
             overflow: hidden; 
@@ -44,10 +44,9 @@
             display: flex; 
             white-space: nowrap; 
             padding-left: 100%; 
-            animation: ticker 65s linear infinite; 
+            animation: ticker 110s linear infinite; 
             animation-fill-mode: forwards;
         }
-        .ticker:hover { animation-play-state: paused; }
         .ticker__item { 
             display: inline-flex; 
             align-items: center; 
@@ -93,7 +92,7 @@
             box-shadow: 0 12px 36px rgba(0,0,0,0.2); 
         }
 
-        /* Hero Price Engine Box */
+        /* Hero Price Box */
         .hero-panel { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
         .hero-price { display: flex; flex-direction: column; gap: 8px; }
         .hero-price__value { font-size: 58px; font-weight: 800; letter-spacing: -0.04em; color: #ffffff; line-height: 1; }
@@ -105,25 +104,29 @@
         .metric-pill span:first-child { font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
         .metric-pill span:last-child { font-size: 15px; font-weight: 700; color: #ffffff; }
 
-        /* Key Takeaway Insights Deck */
+        /* Automated Key Takeaway Insights Panel */
         .insight-panel { background: linear-gradient(145deg, #0f172b, #0b1120); }
         .insight-title { margin: 0 0 18px; color: #ffffff; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .insight-list { display: flex; flex-direction: column; gap: 12px; }
         .insight-item { background: rgba(16, 26, 44, 0.6); border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 18px; font-size: 14px; line-height: 1.6; }
         .insight-item strong { display: block; margin-bottom: 6px; color: #c4d7ff; font-weight: 600; }
 
-        /* Chart Components */
+        /* Interactive Multi-Timeframe Chart Card */
         .chart-card { background: #0b1120; border: 1px solid rgba(74, 217, 161, 0.12); }
         .chart-wrapper { position: relative; width: 100%; height: 380px; margin-top: 16px; }
+        .timeframe-selector { display: flex; gap: 6px; background: rgba(255,255,255,0.04); padding: 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .tf-btn { border: none; background: transparent; color: var(--text-muted); padding: 6px 14px; font-family: inherit; font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .tf-btn:hover { color: #ffffff; }
+        .tf-btn.active { background: #4ad9a1; color: #060b14; }
         
-        /* Data Deck Metrics Table Grid */
+        /* Data Deck Metrics Grid */
         .overview-card { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
         .stat { padding: 14px 18px; border-radius: 16px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease; }
         .stat:hover { border-color: rgba(74, 217, 161, 0.2); background: rgba(255,255,255,0.04); }
         .stat__label { font-size: 13px; color: var(--text-muted); }
         .stat__value { font-size: 15px; font-weight: 600; color: #ffffff; }
 
-        /* More Data Expandable Drawer Panel */
+        /* Technical Expandable Drawer Panel */
         .details-panel { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 18px 20px; color: #e8efff; }
         .details-panel summary { font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
         .details-panel summary::-webkit-details-marker { display: none; }
@@ -186,8 +189,13 @@
 
                 <div class="dashboard-panel chart-card">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h2 style="margin:0; font-size:16px;">Intraday Performance Graph</h2>
-                        <span style="color:var(--text-muted); font-size:13px;">Live Intraday Loop (5m)</span>
+                        <h2 style="margin:0; font-size:16px;">Interactive Performance Graph</h2>
+                        <div class="timeframe-selector">
+                            <button class="tf-btn active" onclick="changeTimeframe(this, '1D')">1D</button>
+                            <button class="tf-btn" onclick="changeTimeframe(this, '1W')">1W</button>
+                            <button class="tf-btn" onclick="changeTimeframe(this, '1M')">1M</button>
+                            <button class="tf-btn" onclick="changeTimeframe(this, '1Y')">1Y</button>
+                        </div>
                     </div>
                     <div class="chart-wrapper"><canvas id="priceChart"></canvas></div>
                 </div>
@@ -241,9 +249,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
         // PASTE YOUR ACTIVE LOCALTUNNEL LINK HERE
-        const TUNNEL_URL = "https://slow-mirrors-boil.loca.lt/api/stocks";
+        const TUNNEL_URL = "https://slow-mirrors-boil.loca.lt";
 
-        let globalData = {}; let activeChart = null;
+        let globalData = {}; let activeChart = null; let currentSelectedSymbol = "";
 
         fetch(TUNNEL_URL)
             .then(res => res.json())
@@ -265,6 +273,7 @@
         }
 
         function displayProfile(symbol) {
+            currentSelectedSymbol = symbol;
             const stock = globalData[symbol];
             document.getElementById('detail-container').style.display = 'block';
             
@@ -277,7 +286,7 @@
             document.getElementById('stock-currency').innerText = `· ${stock.currency}`;
             document.getElementById('stock-summary').innerText = stock.summary;
 
-            // Header Hero Metric Pills Injection
+            // Header Hero Metrics Injection
             document.getElementById('m-cap').innerText = stock.market_cap;
             document.getElementById('m-pe').innerText = stock.pe_ratio;
             document.getElementById('m-vol').innerText = stock.volume;
@@ -292,7 +301,7 @@
             document.getElementById('o-drange').innerText = stock.day_range;
             document.getElementById('o-52range').innerText = stock.fifty_two_week_range;
 
-            // Dropdown Technical Drawer Elements Injection
+            // Technical Drawer Elements Injection
             document.getElementById('d-beta').innerText = stock.beta;
             document.getElementById('d-fpe').innerText = stock.forward_pe;
             document.getElementById('d-margin').innerText = stock.profit_margin;
@@ -300,7 +309,7 @@
             document.getElementById('d-consensus').innerText = stock.consensus;
             document.getElementById('d-web').innerHTML = stock.website ? `<a href="${stock.website}" target="_blank" style="color:#4ad9a1; text-decoration:none;">Launch URL ↗</a>` : "N/A";
 
-            // Footer Structural Categorization Metrics
+            // Footer Structural Metrics
             document.getElementById('row-ind').innerText = `Industry: ${stock.industry}`;
             document.getElementById('row-sec').innerText = `Sector: ${stock.sector}`;
             document.getElementById('row-exch').innerText = `Exchange: ${stock.exchange}`;
@@ -315,24 +324,42 @@
             if (stock.is_positive) { trend.className = "hero-price__change up-bg"; icon.innerText = "▲"; }
             else { trend.className = "hero-price__change down-bg"; icon.innerText = "▼"; }
 
+            // Default to rendering the 1D chart first
+            const defaultBtn = document.querySelector('.timeframe-selector .tf-btn');
+            changeTimeframe(defaultBtn, '1D');
+        }
+
+        function changeTimeframe(buttonElement, tfKey) {
+            if (!currentSelectedSymbol) return;
+            
+            // Toggle active styling states on selectors
+            document.querySelectorAll('.tf-btn').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+            
+            const stock = globalData[currentSelectedSymbol];
+            const tfData = stock.history[tfKey];
+
             if (activeChart) activeChart.destroy();
             const ctx = document.getElementById('priceChart').getContext('2d');
+            
             activeChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: stock.history_dates,
+                    labels: tfData.dates,
                     datasets: [{
-                        label: 'Price', data: stock.history_prices,
+                        label: 'Price', data: tfData.prices,
                         borderColor: stock.is_positive ? '#4ad9a1' : '#ff3b30', 
-                        backgroundColor: stock.is_positive ? 'rgba(74, 217, 161, 0.06)' : 'rgba(255, 59, 48, 0.06)',
-                        tension: 0.15, pointRadius: 0, borderWidth: 2, fill: true
+                        backgroundColor: stock.is_positive ? 'rgba(74, 217, 161, 0.05)' : 'rgba(255, 59, 48, 0.05)',
+                        tension: tfKey === '1D' || tfKey === '1W' ? 0.15 : 0.25, 
+                        pointRadius: tfKey === '1D' || tfKey === '1W' ? 0 : 1, 
+                        borderWidth: 2, fill: true
                     }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: 'Space Grotesk' }, maxTicksLimit: 12 } },
+                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: 'Space Grotesk' }, maxTicksLimit: 10 } },
                         y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', font: { family: 'Space Grotesk' } } }
                     }
                 }
