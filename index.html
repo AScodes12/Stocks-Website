@@ -8,85 +8,153 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-color: #060b14; --panel-bg: #0f172b; --text-main: #edf2ff; --up-color: #4ad9a1; --down-color: #ff3b30; }
-        body { margin: 0; font-family: 'Space Grotesk', sans-serif; background-color: var(--bg-color); color: var(--text-main); -webkit-font-smoothing: antialiased; padding: 24px; }
+        :root { 
+            --bg-color: #060b14; 
+            --panel-bg: #0f172b; 
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --text-main: #edf2ff; 
+            --text-muted: #90a3c4;
+            --up-color: #4ad9a1; 
+            --down-color: #ff3b30; 
+        }
         
-        /* High-Speed Continuous Scrolling Loop CSS */
-        .ticker-wrap { width: 100%; overflow: hidden; background-color: transparent; box-sizing: border-box; padding: 20px 0; display: flex; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 30px; }
-        .ticker { display: flex; white-space: nowrap; padding-left: 100%; animation: ticker 25s linear infinite; }
+        body { 
+            margin: 0; 
+            font-family: 'Space Grotesk', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            -webkit-font-smoothing: antialiased; 
+            padding: 24px; 
+        }
+        
+        /* Butter-Smooth Continuous Scrolling Ticker Loop */
+        .ticker-wrap { 
+            width: 100%; 
+            overflow: hidden; 
+            background-color: transparent; 
+            box-sizing: border-box; 
+            padding: 16px 0; 
+            display: flex; 
+            align-items: center; 
+            border-top: 1px solid rgba(255,255,255,0.06); 
+            border-bottom: 1px solid rgba(255,255,255,0.06); 
+            margin-bottom: 32px; 
+        }
+        .ticker { 
+            display: flex; 
+            white-space: nowrap; 
+            padding-left: 100%; 
+            animation: ticker 65s linear infinite; 
+            animation-fill-mode: forwards;
+        }
         .ticker:hover { animation-play-state: paused; }
-        .ticker__item { display: inline-flex; align-items: center; padding: 0 26px; font-size: 16px; font-weight: 500; letter-spacing: 0.02em; border-left: 1px solid rgba(255,255,255,0.08); cursor: pointer; }
+        .ticker__item { 
+            display: inline-flex; 
+            align-items: center; 
+            padding: 0 32px; 
+            font-size: 15px; 
+            font-weight: 500; 
+            letter-spacing: 0.02em; 
+            border-left: 1px solid rgba(255,255,255,0.08); 
+            cursor: pointer; 
+            transition: color 0.2s ease;
+        }
+        .ticker__item:hover { color: #ffffff; }
         .ticker__item:first-child { border-left: none; }
-        .ticker__symbol { font-weight: 700; color: #ffffff; margin-right: 10px; }
-        .ticker__price { font-weight: 600; margin-right: 8px; color: #e7eaf6; }
-        .ticker__change { font-size: 16px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+        .ticker__symbol { font-weight: 700; color: #ffffff; margin-right: 12px; }
+        .ticker__price { font-weight: 600; margin-right: 10px; color: #e7eaf6; }
+        .ticker__change { font-size: 15px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
         
-        /* Primary UI Architecture */
-        .container { max-width: 1100px; margin: 0 auto; display: none; }
-        .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 22px; }
-        .header__title { margin: 0; font-size: 32px; font-weight: 700; color: #ffffff; }
-        .header__subtitle { margin: 6px 0 0; color: #90a3c4; font-size: 14px; }
-        .session-badge { display: inline-flex; align-items: center; padding: 8px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; border-radius: 999px; background: rgba(74, 217, 161, 0.12); color: #c8ffe4; }
-        .company-badge { width: 72px; height: 72px; border-radius: 22px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #e8ffef; font-size: 20px; font-weight: 700; margin-right: 18px; }
+        /* Master Layout Engine */
+        .container { max-width: 1340px; margin: 0 auto; display: none; }
         
-        /* Profile Header Hero Display */
-        .hero-panel { background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 28px; margin-bottom: 24px; display: grid; grid-template-columns: 1fr auto; gap: 26px; align-items: center; }
-        .hero-price { display: flex; flex-direction: column; gap: 10px; }
-        .hero-price__value { font-size: 54px; font-weight: 800; letter-spacing: -0.05em; color: #ffffff; }
-        .hero-price__change { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: rgba(255,255,255,0.06); font-size: 15px; }
-        .hero-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .metric-pill { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; padding: 12px 16px; color: #d9e6fc; font-size: 13px; text-align: center; }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 24px; 
+            margin-bottom: 28px; 
+        }
+        .header__title { margin: 0; font-size: 34px; font-weight: 700; color: #ffffff; letter-spacing: -0.02em; }
+        .header__subtitle { margin: 6px 0 0; color: var(--text-muted); font-size: 14px; }
+        .session-badge { display: inline-flex; align-items: center; padding: 6px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; border-radius: 999px; background: rgba(74, 217, 161, 0.12); color: #c8ffe4; font-weight: 600; }
+        .company-badge { width: 64px; height: 64px; border-radius: 18px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.06); border: 1px solid var(--panel-border); color: #ffffff; font-size: 22px; font-weight: 700; }
         
-        /* Key Takeaway Insights */
-        .insight-panel { background: rgba(11, 19, 33, 0.94); border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 24px; margin-bottom: 24px; }
-        .insight-title { margin: 0 0 14px; color: #eef4ff; font-size: 18px; font-weight: 700; }
-        .insight-list { display: grid; gap: 14px; }
-        .insight-item { background: rgba(16, 26, 44, 0.92); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 18px; color: #eef4ff; font-size: 14px; line-height: 1.7; }
-        .insight-item strong { display: block; margin-bottom: 8px; color: #c4d7ff; }
+        /* Advanced Twin Column Grid Split */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 420px; gap: 28px; align-items: start; }
+        .left-column, .right-column { display: flex; flex-direction: column; gap: 28px; }
+
+        /* Premium Panels Base */
+        .dashboard-panel { 
+            background: var(--panel-bg); 
+            border: 1px solid var(--panel-border); 
+            border-radius: 24px; 
+            padding: 28px; 
+            box-shadow: 0 12px 36px rgba(0,0,0,0.2); 
+        }
+
+        /* Hero Price Engine Box */
+        .hero-panel { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
+        .hero-price { display: flex; flex-direction: column; gap: 8px; }
+        .hero-price__value { font-size: 58px; font-weight: 800; letter-spacing: -0.04em; color: #ffffff; line-height: 1; }
+        .hero-price__change { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; background: rgba(255,255,255,0.06); font-size: 14px; font-weight: 600; }
+        
+        /* Metric Capsules Grid */
+        .hero-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; min-width: 320px; }
+        .metric-pill { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 12px; color: #d9e6fc; font-size: 13px; text-align: left; display: flex; flex-direction: column; gap: 4px; }
+        .metric-pill span:first-child { font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
+        .metric-pill span:last-child { font-size: 15px; font-weight: 700; color: #ffffff; }
+
+        /* Key Takeaway Insights Deck */
+        .insight-panel { background: linear-gradient(145deg, #0f172b, #0b1120); }
+        .insight-title { margin: 0 0 18px; color: #ffffff; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .insight-list { display: flex; flex-direction: column; gap: 12px; }
+        .insight-item { background: rgba(16, 26, 44, 0.6); border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 18px; font-size: 14px; line-height: 1.6; }
+        .insight-item strong { display: block; margin-bottom: 6px; color: #c4d7ff; font-weight: 600; }
 
         /* Chart Components */
-        .chart-card { background: linear-gradient(180deg, rgba(13, 22, 37, 0.98), rgba(9, 14, 25, 0.98)); border: 1px solid rgba(74, 217, 161, 0.16); border-radius: 24px; padding: 26px; margin-bottom: 30px; box-shadow: 0 28px 58px rgba(0,0,0,0.24); }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-        .chart-header h2 { margin: 0; font-size: 18px; font-weight: 700; }
-        .chart-wrapper { position: relative; width: 100%; min-height: 360px; }
+        .chart-card { background: #0b1120; border: 1px solid rgba(74, 217, 161, 0.12); }
+        .chart-wrapper { position: relative; width: 100%; height: 380px; margin-top: 16px; }
         
-        /* Technical Breakdown Deck Grid */
-        .overview-card { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; margin-bottom: 24px; }
-        .stat { padding: 18px 20px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); transition: transform 0.18s ease, border-color 0.18s ease; }
-        .stat:hover { transform: translateY(-2px); border-color: rgba(74, 217, 161, 0.24); }
-        .stat__label { display: block; font-size: 11px; color: #90a3c4; margin-bottom: 8px; letter-spacing: 0.08em; text-transform: uppercase; }
-        .stat__value { font-size: 18px; font-weight: 700; color: #f7faff; }
+        /* Data Deck Metrics Table Grid */
+        .overview-card { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .stat { padding: 14px 18px; border-radius: 16px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease; }
+        .stat:hover { border-color: rgba(74, 217, 161, 0.2); background: rgba(255,255,255,0.04); }
+        .stat__label { font-size: 13px; color: var(--text-muted); }
+        .stat__value { font-size: 15px; font-weight: 600; color: #ffffff; }
 
-        /* More Data Expandable Panel Drawer */
-        .details-panel { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 18px 20px; margin-bottom: 24px; color: #e8efff; }
-        .details-panel summary { font-weight: 700; cursor: pointer; list-style: none; margin-bottom: 14px; }
+        /* More Data Expandable Drawer Panel */
+        .details-panel { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 18px 20px; color: #e8efff; }
+        .details-panel summary { font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
         .details-panel summary::-webkit-details-marker { display: none; }
-        .details-panel summary::before { content: "Show more data"; display: inline-block; padding: 10px 16px; border-radius: 999px; background: rgba(255,255,255,0.08); color: #f8fbff; }
-        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 10px; }
-        .details-grid div strong { display: block; color: #90a3c4; font-size: 12px; margin-bottom: 4px; }
+        .details-panel summary::after { content: "Show Technical Drawer"; display: inline-block; padding: 8px 16px; border-radius: 10px; background: rgba(255,255,255,0.06); color: #ffffff; font-size: 12px; transition: background 0.2s; }
+        .details-panel[open] summary::after { content: "Hide Technical Drawer"; background: rgba(255,255,255,0.1); }
+        .details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 18px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; }
+        .details-grid div { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.04); }
+        .details-grid div strong { color: var(--text-muted); font-weight: 400; }
 
-        .summary-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 24px; margin-bottom: 24px; }
-        .summary-title { margin: 0 0 14px; color: #8ea9c9; font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
-        .summary-text { margin: 0; color: #e7ecf7; line-height: 1.75; font-size: 15px; }
-        .small-row { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 18px; color: #91a7c5; font-size: 13px; }
+        .summary-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); }
+        .summary-title { margin: 0 0 12px; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+        .summary-text { margin: 0; color: #d0d7e6; line-height: 1.7; font-size: 14px; text-align: justify; }
+        .small-row { display: flex; flex-wrap: wrap; gap: 14px; color: var(--text-muted); font-size: 12px; margin-top: 8px; }
 
         .up-trend { color: var(--up-color); } .down-trend { color: var(--down-color); }
-        .up-bg { background: rgba(74,217,161,0.18) !important; color: #b8ffdc !important; }
-        .down-bg { background: rgba(255,59,48,0.18) !important; color: #ffbeb7 !important; }
+        .up-bg { background: rgba(74,217,161,0.14) !important; color: #b8ffdc !important; }
+        .down-bg { background: rgba(255,59,48,0.14) !important; color: #ffbeb7 !important; }
         
         @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
-        @media (max-width: 1040px) { .hero-panel { grid-template-columns: 1fr; } .hero-metrics { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 1120px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div class="ticker-wrap">
-        <div class="ticker" id="ticker-target">Connecting to Pi Pipeline...</div>
+        <div class="ticker" id="ticker-target">Connecting to Pi Asset Pipelines...</div>
     </div>
 
     <div class="container" id="detail-container">
         <div class="header">
-            <div style="display:flex; align-items:center; gap:16px;">
+            <div style="display:flex; align-items:center; gap:18px;">
                 <span class="company-badge" id="stock-badge">---</span>
                 <div>
                     <h1 class="header__title" id="stock-title">Ticker Title</h1>
@@ -96,74 +164,83 @@
             <span class="session-badge" id="stock-session">Regular</span>
         </div>
 
-        <div class="hero-panel">
-            <div class="hero-price">
-                <div class="hero-price__value" id="stock-price">$0.00</div>
-                <div class="hero-price__change" id="stock-badge-trend">
-                    <span id="trend-icon">▲</span>
-                    <span id="stock-change">0.00%</span>
-                    <span id="stock-currency">· USD</span>
+        <div class="dashboard-grid">
+            
+            <div class="left-column">
+                <div class="dashboard-panel hero-panel">
+                    <div class="hero-price">
+                        <div class="hero-price__value" id="stock-price">$0.00</div>
+                        <div class="hero-price__change" id="stock-badge-trend">
+                            <span id="trend-icon">▲</span>
+                            <span id="stock-change">0.00%</span>
+                            <span id="stock-currency">· USD</span>
+                        </div>
+                    </div>
+                    <div class="hero-metrics">
+                        <div class="metric-pill"><span>Market Cap</span><span id="m-cap">--</span></div>
+                        <div class="metric-pill"><span>PE Ratio</span><span id="m-pe">--</span></div>
+                        <div class="metric-pill"><span>Volume</span><span id="m-vol">--</span></div>
+                        <div class="metric-pill"><span>Avg Volume</span><span id="m-avol">--</span></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-panel chart-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2 style="margin:0; font-size:16px;">Intraday / Historical Grid</h2>
+                        <span style="color:var(--text-muted); font-size:13px;">Interval (1mo / 1d)</span>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="priceChart"></canvas></div>
+                </div>
+
+                <div class="dashboard-panel summary-card">
+                    <p class="summary-title">Corporate Profile Summary</p>
+                    <p class="summary-text" id="stock-summary">Performance insights block profile description.</p>
+                    <div class="small-row">
+                        <span id="row-ind">Industry: --</span> · 
+                        <span id="row-sec">Sector: --</span> · 
+                        <span id="row-exch">Exchange: --</span>
+                    </div>
                 </div>
             </div>
-            <div class="hero-metrics">
-                <div class="metric-pill" id="m-cap">Market Cap: --</div>
-                <div class="metric-pill" id="m-pe">PE Ratio: --</div>
-                <div class="metric-pill" id="m-vol">Volume: --</div>
-                <div class="metric-pill" id="m-avol">Avg Volume: --</div>
-                <div class="metric-pill" id="m-rate">Rating: --</div>
-                <div class="metric-pill" id="m-earn">Earnings: --</div>
+
+            <div class="right-column">
+                <div class="dashboard-panel insight-panel">
+                    <p class="insight-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        Automated AI Takeaways
+                    </p>
+                    <div class="insight-list" id="insight-target"></div>
+                </div>
+
+                <div class="dashboard-panel overview-card">
+                    <div class="stat"><span class="stat__label">Prev Close</span><span class="stat__value" id="o-pclose">--</span></div>
+                    <div class="stat"><span class="stat__label">Open</span><span class="stat__value" id="o-open">--</span></div>
+                    <div class="stat" style="grid-column: span 2;"><span class="stat__label">Today Change</span><span class="stat__value" id="o-chg">--</span></div>
+                    <div class="stat" style="grid-column: span 2;"><span class="stat__label">Day Range</span><span class="stat__value" id="o-drange">--</span></div>
+                    <div class="stat" style="grid-column: span 2;"><span class="stat__label">52W Range</span><span class="stat__value" id="o-52range">--</span></div>
+                </div>
+
+                <div class="details-panel">
+                    <summary></summary>
+                    <div class="details-grid">
+                        <div><strong>Beta Valuation</strong><span id="d-beta">--</span></div>
+                        <div><strong>Forward P/E</strong><span id="d-fpe">--</span></div>
+                        <div><strong>Profit Margin</strong><span id="d-margin">--</span></div>
+                        <div><strong>Short Ratio</strong><span id="d-short">--</span></div>
+                        <div><strong>Consensus Target</strong><span id="d-consensus">--</span></div>
+                        <div><strong>Rating</strong><span id="m-rate">--</span></div>
+                        <div><strong>Next Earnings</strong><span id="m-earn" style="font-weight:600;">--</span></div>
+                        <div><strong>Corporate Web</strong><span id="d-web">--</span></div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="insight-panel">
-            <p class="insight-title">Key takeaways</p>
-            <div class="insight-list" id="insight-target"></div>
-        </div>
-
-        <div class="chart-card">
-            <div class="chart-header">
-                <div><h2>Daily Price</h2><span style="color:#8f95a1; font-size:14px;">Past Month Loop</span></div>
-            </div>
-            <div class="chart-wrapper"><canvas id="priceChart"></canvas></div>
-        </div>
-
-        <div class="overview-card">
-            <div class="stat"><span class="stat__label">Previous Close</span><span class="stat__value" id="o-pclose">--</span></div>
-            <div class="stat"><span class="stat__label">Today Change</span><span class="stat__value" id="o-chg">--</span></div>
-            <div class="stat"><span class="stat__label">Open</span><span class="stat__value" id="o-open">--</span></div>
-            <div class="stat"><span class="stat__label">Day Range</span><span class="stat__value" id="o-drange">--</span></div>
-            <div class="stat"><span class="stat__label">52W Range</span><span class="stat__value" id="o-52range">--</span></div>
-            <div class="stat"><span class="stat__label">Volume Metric</span><span class="stat__value" id="o-vol">--</span></div>
-            <div class="stat"><span class="stat__label">Avg Volume Metric</span><span class="stat__value" id="o-avol">--</span></div>
-        </div>
-
-        <details class="details-panel">
-            <summary></summary>
-            <div class="details-grid">
-                <div><strong>Beta</strong><div id="d-beta">--</div></div>
-                <div><strong>Forward P/E</strong><div id="d-fpe">--</div></div>
-                <div><strong>Profit Margin</strong><div id="d-margin">--</div></div>
-                <div><strong>Short Ratio</strong><div id="d-short">--</div></div>
-                <div><strong>Analyst Consensus</strong><div id="d-consensus">--</div></div>
-                <div><strong>Website</strong><div id="d-web">--</div></div>
-            </div>
-        </details>
-
-        <div class="small-row">
-            <span id="row-ind">Industry: --</span>
-            <span id="row-sec">Sector: --</span>
-            <span id="row-exch">Exchange: --</span>
-        </div>
-
-        <div class="summary-card">
-            <p class="summary-title">About</p>
-            <p class="summary-text" id="stock-summary">Performance insights block profile description.</p>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
-        // PASTE YOUR LOCALTUNNEL LINK HERE
+        // PASTE YOUR ACTIVE LOCALTUNNEL LINK HERE
         const TUNNEL_URL = "https://slow-mirrors-boil.loca.lt/api/stocks";
 
         let globalData = {}; let activeChart = null;
@@ -171,11 +248,11 @@
         fetch(TUNNEL_URL)
             .then(res => res.json())
             .then(data => { globalData = data; populateTicker(); })
-            .catch(err => { document.getElementById('ticker-target').innerText = "Bridge Tunnel Error."; });
+            .catch(err => { document.getElementById('ticker-target').innerText = "Data Transmission Stream Broken."; });
 
         function populateTicker() {
             const target = document.getElementById('ticker-target');
-            // Replicates array chain structure to smooth continuous tracking flow 
+            // Duplicate multiple arrays arrays together for smooth infinite looping layout behavior
             const loops = [...Object.values(globalData), ...Object.values(globalData), ...Object.values(globalData)];
             target.innerHTML = loops.map(stock => `
                 <div class="ticker__item" onclick="displayProfile('${stock.symbol}')">
@@ -193,47 +270,45 @@
             document.getElementById('detail-container').style.display = 'block';
             
             document.getElementById('stock-badge').innerText = stock.symbol;
-            document.getElementById('stock-title').innerText = `${stock.name} (${stock.symbol})`;
-            document.getElementById('stock-subtitle').innerText = `${stock.exchange} · ${stock.sector}`;
+            document.getElementById('stock-title').innerText = `${stock.name}`;
+            document.getElementById('stock-subtitle').innerText = `${stock.exchange} · ${stock.sector} Pool`;
             document.getElementById('stock-session').innerText = stock.session_label;
             document.getElementById('stock-price').innerText = stock.price;
             document.getElementById('stock-change').innerText = stock.change;
             document.getElementById('stock-currency').innerText = `· ${stock.currency}`;
             document.getElementById('stock-summary').innerText = stock.summary;
 
-            // Pills Injection
-            document.getElementById('m-cap').innerText = `Market Cap: ${stock.market_cap}`;
-            document.getElementById('m-pe').innerText = `PE Ratio: ${stock.pe_ratio}`;
-            document.getElementById('m-vol').innerText = `Volume: ${stock.volume}`;
-            document.getElementById('m-avol').innerText = `Avg Volume: ${stock.avg_volume}`;
-            document.getElementById('m-rate').innerText = `Rating: ${stock.rating}`;
-            document.getElementById('m-earn').innerText = `Earnings: ${stock.earnings_date}`;
+            // Header Hero Metric Pills Injection
+            document.getElementById('m-cap').innerText = stock.market_cap;
+            document.getElementById('m-pe').innerText = stock.pe_ratio;
+            document.getElementById('m-vol').innerText = stock.volume;
+            document.getElementById('m-avol').innerText = stock.avg_volume;
+            document.getElementById('m-rate').innerText = stock.rating;
+            document.getElementById('m-earn').innerText = stock.earnings_date;
 
-            // Overview Deck Injection
+            // Central Overview Box Injection
             document.getElementById('o-pclose').innerText = stock.previous_close;
-            document.getElementById('o-chg').innerText = `${stock.change_amount} / ${stock.change}`;
             document.getElementById('o-open').innerText = stock.open;
+            document.getElementById('o-chg').innerText = `${stock.change_amount} (${stock.change})`;
             document.getElementById('o-drange').innerText = stock.day_range;
             document.getElementById('o-52range').innerText = stock.fifty_two_week_range;
-            document.getElementById('o-vol').innerText = stock.volume;
-            document.getElementById('o-avol').innerText = stock.avg_volume;
 
-            // Details Drawer Drawer
+            // Dropdown Technical Drawer Elements Injection
             document.getElementById('d-beta').innerText = stock.beta;
             document.getElementById('d-fpe').innerText = stock.forward_pe;
             document.getElementById('d-margin').innerText = stock.profit_margin;
             document.getElementById('d-short').innerText = stock.short_ratio;
             document.getElementById('d-consensus').innerText = stock.consensus;
-            document.getElementById('d-web').innerHTML = stock.website ? `<a href="${stock.website}" target="_blank" style="color:#4ad9a1;">Visit</a>` : "N/A";
+            document.getElementById('d-web').innerHTML = stock.website ? `<a href="${stock.website}" target="_blank" style="color:#4ad9a1; text-decoration:none;">Launch URL ↗</a>` : "N/A";
 
-            // Small Row Metadata
+            // Footer Structural Categorization Metrics
             document.getElementById('row-ind').innerText = `Industry: ${stock.industry}`;
             document.getElementById('row-sec').innerText = `Sector: ${stock.sector}`;
             document.getElementById('row-exch').innerText = `Exchange: ${stock.exchange}`;
 
-            // Takeaways Logic
+            // Automated Summary Insight Blocks
             document.getElementById('insight-target').innerHTML = stock.key_insights.map(i => `
-                <div class="insight-item"><strong>${i.title}</strong><p style="margin:0;">${i.detail}</p></div>
+                <div class="insight-item"><strong>${i.title}</strong><p style="margin:0; color:#cbd5e1; font-size:13px;">${i.detail}</p></div>
             `).join('');
 
             const trend = document.getElementById('stock-badge-trend');
@@ -248,17 +323,18 @@
                 data: {
                     labels: stock.history_dates,
                     datasets: [{
-                        label: 'Close', data: stock.history_prices,
-                        borderColor: '#4ad9a1', backgroundColor: 'rgba(74, 217, 161, 0.18)',
-                        tension: 0.3, pointRadius: 2, borderWidth: 2, fill: true
+                        label: 'Close Price', data: stock.history_prices,
+                        borderColor: stock.is_positive ? '#4ad9a1' : '#ff3b30', 
+                        backgroundColor: stock.is_positive ? 'rgba(74, 217, 161, 0.06)' : 'rgba(255, 59, 48, 0.06)',
+                        tension: 0.25, pointRadius: 1, borderWidth: 2, fill: true
                     }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { grid: { display: false }, ticks: { color: '#8f95a1' } },
-                        y: { grid: { color: 'rgba(255,255,255,0.08)' }, ticks: { color: '#8f95a1' } }
+                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: 'Space Grotesk' } } },
+                        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', font: { family: 'Space Grotesk' } } }
                     }
                 }
             });
