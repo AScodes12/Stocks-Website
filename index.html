@@ -8,48 +8,80 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-color: #0b0c0e; --panel-bg: #0f172b; --text-main: #ffffff; --up-color: #00c805; --down-color: #ff3b30; }
-        body { margin: 0; font-family: 'Space Grotesk', sans-serif; background-color: var(--bg-color); color: var(--text-main); -webkit-font-smoothing: antialiased; padding: 20px; }
+        :root { --bg-color: #060b14; --panel-bg: #0f172b; --text-main: #edf2ff; --up-color: #4ad9a1; --down-color: #ff3b30; }
+        body { margin: 0; font-family: 'Space Grotesk', sans-serif; background-color: var(--bg-color); color: var(--text-main); -webkit-font-smoothing: antialiased; padding: 24px; }
         
-        /* Ticker Styling */
+        /* High-Speed Continuous Scrolling Loop CSS */
         .ticker-wrap { width: 100%; overflow: hidden; background-color: transparent; box-sizing: border-box; padding: 20px 0; display: flex; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 30px; }
-        .ticker { display: flex; white-space: nowrap; padding-left: 100%; animation: ticker 40s linear infinite; }
+        .ticker { display: flex; white-space: nowrap; padding-left: 100%; animation: ticker 25s linear infinite; }
+        .ticker:hover { animation-play-state: paused; }
         .ticker__item { display: inline-flex; align-items: center; padding: 0 26px; font-size: 16px; font-weight: 500; letter-spacing: 0.02em; border-left: 1px solid rgba(255,255,255,0.08); cursor: pointer; }
         .ticker__item:first-child { border-left: none; }
-        .ticker__symbol { font-weight: 700; color: var(--text-main); margin-right: 10px; }
+        .ticker__symbol { font-weight: 700; color: #ffffff; margin-right: 10px; }
         .ticker__price { font-weight: 600; margin-right: 8px; color: #e7eaf6; }
-        .ticker__change { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .ticker__change { font-size: 16px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
         
-        /* Detail Layout Styling */
+        /* Primary UI Architecture */
         .container { max-width: 1100px; margin: 0 auto; display: none; }
         .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 22px; }
-        .header__title { margin: 0; font-size: 32px; font-weight: 700; }
+        .header__title { margin: 0; font-size: 32px; font-weight: 700; color: #ffffff; }
+        .header__subtitle { margin: 6px 0 0; color: #90a3c4; font-size: 14px; }
+        .session-badge { display: inline-flex; align-items: center; padding: 8px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; border-radius: 999px; background: rgba(74, 217, 161, 0.12); color: #c8ffe4; }
         .company-badge { width: 72px; height: 72px; border-radius: 22px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #e8ffef; font-size: 20px; font-weight: 700; margin-right: 18px; }
         
+        /* Profile Header Hero Display */
         .hero-panel { background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 28px; margin-bottom: 24px; display: grid; grid-template-columns: 1fr auto; gap: 26px; align-items: center; }
+        .hero-price { display: flex; flex-direction: column; gap: 10px; }
         .hero-price__value { font-size: 54px; font-weight: 800; letter-spacing: -0.05em; color: #ffffff; }
         .hero-price__change { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: rgba(255,255,255,0.06); font-size: 15px; }
+        .hero-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .metric-pill { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; padding: 12px 16px; color: #d9e6fc; font-size: 13px; text-align: center; }
         
+        /* Key Takeaway Insights */
+        .insight-panel { background: rgba(11, 19, 33, 0.94); border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 24px; margin-bottom: 24px; }
+        .insight-title { margin: 0 0 14px; color: #eef4ff; font-size: 18px; font-weight: 700; }
+        .insight-list { display: grid; gap: 14px; }
+        .insight-item { background: rgba(16, 26, 44, 0.92); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 18px; color: #eef4ff; font-size: 14px; line-height: 1.7; }
+        .insight-item strong { display: block; margin-bottom: 8px; color: #c4d7ff; }
+
+        /* Chart Components */
+        .chart-card { background: linear-gradient(180deg, rgba(13, 22, 37, 0.98), rgba(9, 14, 25, 0.98)); border: 1px solid rgba(74, 217, 161, 0.16); border-radius: 24px; padding: 26px; margin-bottom: 30px; box-shadow: 0 28px 58px rgba(0,0,0,0.24); }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .chart-header h2 { margin: 0; font-size: 18px; font-weight: 700; }
+        .chart-wrapper { position: relative; width: 100%; min-height: 360px; }
+        
+        /* Technical Breakdown Deck Grid */
+        .overview-card { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; margin-bottom: 24px; }
+        .stat { padding: 18px 20px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); transition: transform 0.18s ease, border-color 0.18s ease; }
+        .stat:hover { transform: translateY(-2px); border-color: rgba(74, 217, 161, 0.24); }
+        .stat__label { display: block; font-size: 11px; color: #90a3c4; margin-bottom: 8px; letter-spacing: 0.08em; text-transform: uppercase; }
+        .stat__value { font-size: 18px; font-weight: 700; color: #f7faff; }
+
+        /* More Data Expandable Panel Drawer */
+        .details-panel { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 18px 20px; margin-bottom: 24px; color: #e8efff; }
+        .details-panel summary { font-weight: 700; cursor: pointer; list-style: none; margin-bottom: 14px; }
+        .details-panel summary::-webkit-details-marker { display: none; }
+        .details-panel summary::before { content: "Show more data"; display: inline-block; padding: 10px 16px; border-radius: 999px; background: rgba(255,255,255,0.08); color: #f8fbff; }
+        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 10px; }
+        .details-grid div strong { display: block; color: #90a3c4; font-size: 12px; margin-bottom: 4px; }
+
         .summary-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 24px; margin-bottom: 24px; }
         .summary-title { margin: 0 0 14px; color: #8ea9c9; font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
         .summary-text { margin: 0; color: #e7ecf7; line-height: 1.75; font-size: 15px; }
-        
-        .chart-card { background: linear-gradient(180deg, rgba(13, 22, 37, 0.98), rgba(9, 14, 25, 0.98)); border: 1px solid rgba(74, 217, 161, 0.16); border-radius: 24px; padding: 26px; margin-bottom: 30px; }
-        .chart-wrapper { position: relative; width: 100%; min-height: 360px; }
-        
-        .up-trend { color: var(--up-color); }
-        .down-trend { color: var(--down-color); }
+        .small-row { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 18px; color: #91a7c5; font-size: 13px; }
+
+        .up-trend { color: var(--up-color); } .down-trend { color: var(--down-color); }
         .up-bg { background: rgba(74,217,161,0.18) !important; color: #b8ffdc !important; }
         .down-bg { background: rgba(255,59,48,0.18) !important; color: #ffbeb7 !important; }
         
         @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
-        @media (max-width: 1040px) { .hero-panel { grid-template-columns: 1fr; } }
+        @media (max-width: 1040px) { .hero-panel { grid-template-columns: 1fr; } .hero-metrics { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
 <body>
 
     <div class="ticker-wrap">
-        <div class="ticker" id="ticker-target">Loading continuous data matrix from Pi...</div>
+        <div class="ticker" id="ticker-target">Connecting to Pi Pipeline...</div>
     </div>
 
     <div class="container" id="detail-container">
@@ -57,9 +89,11 @@
             <div style="display:flex; align-items:center; gap:16px;">
                 <span class="company-badge" id="stock-badge">---</span>
                 <div>
-                    <h1 class="header__title" id="stock-title">Select a stock ticker</h1>
+                    <h1 class="header__title" id="stock-title">Ticker Title</h1>
+                    <p class="header__subtitle" id="stock-subtitle">Exchange · Sector</p>
                 </div>
             </div>
+            <span class="session-badge" id="stock-session">Regular</span>
         </div>
 
         <div class="hero-panel">
@@ -68,53 +102,87 @@
                 <div class="hero-price__change" id="stock-badge-trend">
                     <span id="trend-icon">▲</span>
                     <span id="stock-change">0.00%</span>
+                    <span id="stock-currency">· USD</span>
                 </div>
+            </div>
+            <div class="hero-metrics">
+                <div class="metric-pill" id="m-cap">Market Cap: --</div>
+                <div class="metric-pill" id="m-pe">PE Ratio: --</div>
+                <div class="metric-pill" id="m-vol">Volume: --</div>
+                <div class="metric-pill" id="m-avol">Avg Volume: --</div>
+                <div class="metric-pill" id="m-rate">Rating: --</div>
+                <div class="metric-pill" id="m-earn">Earnings: --</div>
             </div>
         </div>
 
+        <div class="insight-panel">
+            <p class="insight-title">Key takeaways</p>
+            <div class="insight-list" id="insight-target"></div>
+        </div>
+
         <div class="chart-card">
-            <div class="chart-wrapper">
-                <canvas id="priceChart"></canvas>
+            <div class="chart-header">
+                <div><h2>Daily Price</h2><span style="color:#8f95a1; font-size:14px;">Past Month Loop</span></div>
             </div>
+            <div class="chart-wrapper"><canvas id="priceChart"></canvas></div>
+        </div>
+
+        <div class="overview-card">
+            <div class="stat"><span class="stat__label">Previous Close</span><span class="stat__value" id="o-pclose">--</span></div>
+            <div class="stat"><span class="stat__label">Today Change</span><span class="stat__value" id="o-chg">--</span></div>
+            <div class="stat"><span class="stat__label">Open</span><span class="stat__value" id="o-open">--</span></div>
+            <div class="stat"><span class="stat__label">Day Range</span><span class="stat__value" id="o-drange">--</span></div>
+            <div class="stat"><span class="stat__label">52W Range</span><span class="stat__value" id="o-52range">--</span></div>
+            <div class="stat"><span class="stat__label">Volume Metric</span><span class="stat__value" id="o-vol">--</span></div>
+            <div class="stat"><span class="stat__label">Avg Volume Metric</span><span class="stat__value" id="o-avol">--</span></div>
+        </div>
+
+        <details class="details-panel">
+            <summary></summary>
+            <div class="details-grid">
+                <div><strong>Beta</strong><div id="d-beta">--</div></div>
+                <div><strong>Forward P/E</strong><div id="d-fpe">--</div></div>
+                <div><strong>Profit Margin</strong><div id="d-margin">--</div></div>
+                <div><strong>Short Ratio</strong><div id="d-short">--</div></div>
+                <div><strong>Analyst Consensus</strong><div id="d-consensus">--</div></div>
+                <div><strong>Website</strong><div id="d-web">--</div></div>
+            </div>
+        </details>
+
+        <div class="small-row">
+            <span id="row-ind">Industry: --</span>
+            <span id="row-sec">Sector: --</span>
+            <span id="row-exch">Exchange: --</span>
         </div>
 
         <div class="summary-card">
             <p class="summary-title">About</p>
-            <p class="summary-text" id="stock-summary">Select an item from the scrolling ticker up top to map out full performance insights.</p>
+            <p class="summary-text" id="stock-summary">Performance insights block profile description.</p>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
-        // UPDATE THIS WITH YOUR ACTIVE LOCALTUNNEL LINK
-        const TUNNEL_URL = "https://forty-pants-act.loca.lt/api/stocks";
+        // PASTE YOUR LOCALTUNNEL LINK HERE
+        const TUNNEL_URL = "https://slow-mirrors-boil.loca.lt/api/stocks";
 
-        let globalData = {};
-        let activeChart = null;
+        let globalData = {}; let activeChart = null;
 
         fetch(TUNNEL_URL)
             .then(res => res.json())
-            .then(data => {
-                globalData = data;
-                populateTicker();
-            })
-            .catch(err => {
-                document.getElementById('ticker-target').innerText = "Bridge Connection Down.";
-                console.error(err);
-            });
+            .then(data => { globalData = data; populateTicker(); })
+            .catch(err => { document.getElementById('ticker-target').innerText = "Bridge Tunnel Error."; });
 
         function populateTicker() {
             const target = document.getElementById('ticker-target');
-            // Duplicate array elements to keep continuous looping structure clean
-            const stockArray = [...Object.values(globalData), ...Object.values(globalData), ...Object.values(globalData)];
-            
-            target.innerHTML = stockArray.map(stock => `
+            // Replicates array chain structure to smooth continuous tracking flow 
+            const loops = [...Object.values(globalData), ...Object.values(globalData), ...Object.values(globalData)];
+            target.innerHTML = loops.map(stock => `
                 <div class="ticker__item" onclick="displayProfile('${stock.symbol}')">
                     <span class="ticker__symbol">${stock.symbol}</span>
                     <span class="ticker__price">${stock.price}</span>
                     <span class="ticker__change ${stock.is_positive ? 'up-trend' : 'down-trend'}">
-                        <span>${stock.is_positive ? '▲' : '▼'}</span>
-                        <span>${stock.change}</span>
+                        <span>${stock.is_positive ? '▲' : '▼'}</span><span>${stock.change}</span>
                     </span>
                 </div>
             `).join('');
@@ -126,19 +194,52 @@
             
             document.getElementById('stock-badge').innerText = stock.symbol;
             document.getElementById('stock-title').innerText = `${stock.name} (${stock.symbol})`;
+            document.getElementById('stock-subtitle').innerText = `${stock.exchange} · ${stock.sector}`;
+            document.getElementById('stock-session').innerText = stock.session_label;
             document.getElementById('stock-price').innerText = stock.price;
             document.getElementById('stock-change').innerText = stock.change;
+            document.getElementById('stock-currency').innerText = `· ${stock.currency}`;
             document.getElementById('stock-summary').innerText = stock.summary;
 
-            const trendBadge = document.getElementById('stock-badge-trend');
+            // Pills Injection
+            document.getElementById('m-cap').innerText = `Market Cap: ${stock.market_cap}`;
+            document.getElementById('m-pe').innerText = `PE Ratio: ${stock.pe_ratio}`;
+            document.getElementById('m-vol').innerText = `Volume: ${stock.volume}`;
+            document.getElementById('m-avol').innerText = `Avg Volume: ${stock.avg_volume}`;
+            document.getElementById('m-rate').innerText = `Rating: ${stock.rating}`;
+            document.getElementById('m-earn').innerText = `Earnings: ${stock.earnings_date}`;
+
+            // Overview Deck Injection
+            document.getElementById('o-pclose').innerText = stock.previous_close;
+            document.getElementById('o-chg').innerText = `${stock.change_amount} / ${stock.change}`;
+            document.getElementById('o-open').innerText = stock.open;
+            document.getElementById('o-drange').innerText = stock.day_range;
+            document.getElementById('o-52range').innerText = stock.fifty_two_week_range;
+            document.getElementById('o-vol').innerText = stock.volume;
+            document.getElementById('o-avol').innerText = stock.avg_volume;
+
+            // Details Drawer Drawer
+            document.getElementById('d-beta').innerText = stock.beta;
+            document.getElementById('d-fpe').innerText = stock.forward_pe;
+            document.getElementById('d-margin').innerText = stock.profit_margin;
+            document.getElementById('d-short').innerText = stock.short_ratio;
+            document.getElementById('d-consensus').innerText = stock.consensus;
+            document.getElementById('d-web').innerHTML = stock.website ? `<a href="${stock.website}" target="_blank" style="color:#4ad9a1;">Visit</a>` : "N/A";
+
+            // Small Row Metadata
+            document.getElementById('row-ind').innerText = `Industry: ${stock.industry}`;
+            document.getElementById('row-sec').innerText = `Sector: ${stock.sector}`;
+            document.getElementById('row-exch').innerText = `Exchange: ${stock.exchange}`;
+
+            // Takeaways Logic
+            document.getElementById('insight-target').innerHTML = stock.key_insights.map(i => `
+                <div class="insight-item"><strong>${i.title}</strong><p style="margin:0;">${i.detail}</p></div>
+            `).join('');
+
+            const trend = document.getElementById('stock-badge-trend');
             const icon = document.getElementById('trend-icon');
-            if (stock.is_positive) {
-                trendBadge.className = "hero-price__change up-bg";
-                icon.innerText = "▲";
-            } else {
-                trendBadge.className = "hero-price__change down-bg";
-                icon.innerText = "▼";
-            }
+            if (stock.is_positive) { trend.className = "hero-price__change up-bg"; icon.innerText = "▲"; }
+            else { trend.className = "hero-price__change down-bg"; icon.innerText = "▼"; }
 
             if (activeChart) activeChart.destroy();
             const ctx = document.getElementById('priceChart').getContext('2d');
@@ -147,20 +248,17 @@
                 data: {
                     labels: stock.history_dates,
                     datasets: [{
-                        label: 'Close',
-                        data: stock.history_prices,
-                        borderColor: stock.is_positive ? '#00c805' : '#ff3b30',
-                        backgroundColor: stock.is_positive ? 'rgba(74, 217, 161, 0.15)' : 'rgba(255, 59, 48, 0.15)',
-                        tension: 0.3,
-                        fill: true
+                        label: 'Close', data: stock.history_prices,
+                        borderColor: '#4ad9a1', backgroundColor: 'rgba(74, 217, 161, 0.18)',
+                        tension: 0.3, pointRadius: 2, borderWidth: 2, fill: true
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
                     scales: {
-                        x: { grid: { display: false } },
-                        y: { grid: { color: 'rgba(255,255,255,0.08)' } }
+                        x: { grid: { display: false }, ticks: { color: '#8f95a1' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.08)' }, ticks: { color: '#8f95a1' } }
                     }
                 }
             });
