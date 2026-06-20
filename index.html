@@ -3,48 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Raspberry Pi Stock Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Sleek Live Stock Ticker & Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0b0c0e; --panel: #12141c; --text: #ffffff; --up: #00c805; --down: #ff3b30; }
-        body { margin: 0; font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); padding: 24px; }
-        .grid { display: grid; grid-template-columns: 300px 1fr; gap: 24px; max-width: 1400px; margin: 0 auto; }
-        .sidebar { background: var(--panel); border-radius: 16px; padding: 16px; height: fit-content; }
-        .stock-item { display: flex; justify-content: space-between; padding: 14px; border-bottom: 1px solid #202430; cursor: pointer; border-radius: 8px; transition: 0.2s; }
-        .stock-item:hover { background: rgba(255,255,255,0.05); }
-        .up-text { color: var(--up); } .down-text { color: var(--down); }
-        .main-panel { background: var(--panel); border-radius: 16px; padding: 32px; min-height: 500px; }
-        .hidden { display: none; }
-        .chart-box { height: 300px; margin-top: 24px; position: relative; }
+        :root { --bg-color: #0b0c0e; --panel-bg: #0f172b; --text-main: #ffffff; --up-color: #00c805; --down-color: #ff3b30; }
+        body { margin: 0; font-family: 'Space Grotesk', sans-serif; background-color: var(--bg-color); color: var(--text-main); -webkit-font-smoothing: antialiased; padding: 20px; }
+        
+        /* Ticker Styling */
+        .ticker-wrap { width: 100%; overflow: hidden; background-color: transparent; box-sizing: border-box; padding: 20px 0; display: flex; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 30px; }
+        .ticker { display: flex; white-space: nowrap; padding-left: 100%; animation: ticker 40s linear infinite; }
+        .ticker__item { display: inline-flex; align-items: center; padding: 0 26px; font-size: 16px; font-weight: 500; letter-spacing: 0.02em; border-left: 1px solid rgba(255,255,255,0.08); cursor: pointer; }
+        .ticker__item:first-child { border-left: none; }
+        .ticker__symbol { font-weight: 700; color: var(--text-main); margin-right: 10px; }
+        .ticker__price { font-weight: 600; margin-right: 8px; color: #e7eaf6; }
+        .ticker__change { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        
+        /* Detail Layout Styling */
+        .container { max-width: 1100px; margin: 0 auto; display: none; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 22px; }
+        .header__title { margin: 0; font-size: 32px; font-weight: 700; }
+        .company-badge { width: 72px; height: 72px; border-radius: 22px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #e8ffef; font-size: 20px; font-weight: 700; margin-right: 18px; }
+        
+        .hero-panel { background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 28px; margin-bottom: 24px; display: grid; grid-template-columns: 1fr auto; gap: 26px; align-items: center; }
+        .hero-price__value { font-size: 54px; font-weight: 800; letter-spacing: -0.05em; color: #ffffff; }
+        .hero-price__change { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: rgba(255,255,255,0.06); font-size: 15px; }
+        
+        .summary-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 24px; margin-bottom: 24px; }
+        .summary-title { margin: 0 0 14px; color: #8ea9c9; font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
+        .summary-text { margin: 0; color: #e7ecf7; line-height: 1.75; font-size: 15px; }
+        
+        .chart-card { background: linear-gradient(180deg, rgba(13, 22, 37, 0.98), rgba(9, 14, 25, 0.98)); border: 1px solid rgba(74, 217, 161, 0.16); border-radius: 24px; padding: 26px; margin-bottom: 30px; }
+        .chart-wrapper { position: relative; width: 100%; min-height: 360px; }
+        
+        .up-trend { color: var(--up-color); }
+        .down-trend { color: var(--down-color); }
+        .up-bg { background: rgba(74,217,161,0.18) !important; color: #b8ffdc !important; }
+        .down-bg { background: rgba(255,59,48,0.18) !important; color: #ffbeb7 !important; }
+        
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        @media (max-width: 1040px) { .hero-panel { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <div class="grid">
-        <div class="sidebar">
-            <h3 style="margin-top:0;">Pi Watchlist</h3>
-            <div id="ticker-list">Connecting to Raspberry Pi...</div>
-        </div>
+    <div class="ticker-wrap">
+        <div class="ticker" id="ticker-target">Loading continuous data matrix from Pi...</div>
+    </div>
 
-        <div class="main-panel">
-            <div id="empty-state"><h2>Select a stock to view live data from your Pi</h2></div>
-            <div id="content-state" class="hidden">
-                <h1 id="stock-title">Company Profile</h1>
-                <h2 id="stock-price">$0.00</h2>
-                <p id="stock-change">0.00%</p>
-                <hr style="border-color:#202430;">
-                <p id="stock-summary"></p>
-                <div class="chart-box">
-                    <canvas id="detailsChart"></canvas>
+    <div class="container" id="detail-container">
+        <div class="header">
+            <div style="display:flex; align-items:center; gap:16px;">
+                <span class="company-badge" id="stock-badge">---</span>
+                <div>
+                    <h1 class="header__title" id="stock-title">Select a stock ticker</h1>
                 </div>
             </div>
+        </div>
+
+        <div class="hero-panel">
+            <div class="hero-price">
+                <div class="hero-price__value" id="stock-price">$0.00</div>
+                <div class="hero-price__change" id="stock-badge-trend">
+                    <span id="trend-icon">▲</span>
+                    <span id="stock-change">0.00%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-wrapper">
+                <canvas id="priceChart"></canvas>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <p class="summary-title">About</p>
+            <p class="summary-text" id="stock-summary">Select an item from the scrolling ticker up top to map out full performance insights.</p>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // CHANGE THIS TO YOUR ACTIVE LOCALTUNNEL LINK EVERY TIME YOU RESTART IT
-        const TUNNEL_URL = "https://cruel-sides-exist.loca.lt/api/stocks";
+        // UPDATE THIS WITH YOUR ACTIVE LOCALTUNNEL LINK
+        const TUNNEL_URL = "https://forty-pants-act.loca.lt/api/stocks";
 
         let globalData = {};
         let activeChart = null;
@@ -53,57 +96,73 @@
             .then(res => res.json())
             .then(data => {
                 globalData = data;
-                renderWatchlist();
-            }).catch(err => {
-                document.getElementById('ticker-list').innerText = "Failed to connect to Pi tunnel.";
+                populateTicker();
+            })
+            .catch(err => {
+                document.getElementById('ticker-target').innerText = "Bridge Connection Down.";
                 console.error(err);
             });
 
-        function renderWatchlist() {
-            const container = document.getElementById('ticker-list');
-            container.innerHTML = '';
-            Object.values(globalData).forEach(stock => {
-                const item = document.createElement('div');
-                item.className = 'stock-item';
-                item.onclick = () => showDetails(stock.symbol);
-                item.innerHTML = `
-                    <div><strong>${stock.symbol}</strong></div>
-                    <div style="text-align:right;">
-                        <div>${stock.price}</div>
-                        <div class="${stock.is_positive ? 'up-text' : 'down-text'}">${stock.change}</div>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
+        function populateTicker() {
+            const target = document.getElementById('ticker-target');
+            // Duplicate array elements to keep continuous looping structure clean
+            const stockArray = [...Object.values(globalData), ...Object.values(globalData), ...Object.values(globalData)];
+            
+            target.innerHTML = stockArray.map(stock => `
+                <div class="ticker__item" onclick="displayProfile('${stock.symbol}')">
+                    <span class="ticker__symbol">${stock.symbol}</span>
+                    <span class="ticker__price">${stock.price}</span>
+                    <span class="ticker__change ${stock.is_positive ? 'up-trend' : 'down-trend'}">
+                        <span>${stock.is_positive ? '▲' : '▼'}</span>
+                        <span>${stock.change}</span>
+                    </span>
+                </div>
+            `).join('');
         }
 
-        function showDetails(symbol) {
+        function displayProfile(symbol) {
             const stock = globalData[symbol];
-            document.getElementById('empty-state').classList.add('hidden');
-            document.getElementById('content-state').classList.remove('hidden');
+            document.getElementById('detail-container').style.display = 'block';
             
+            document.getElementById('stock-badge').innerText = stock.symbol;
             document.getElementById('stock-title').innerText = `${stock.name} (${stock.symbol})`;
             document.getElementById('stock-price').innerText = stock.price;
             document.getElementById('stock-change').innerText = stock.change;
-            document.getElementById('stock-change').className = stock.is_positive ? 'up-text' : 'down-text';
             document.getElementById('stock-summary').innerText = stock.summary;
 
-            if (activeChart) activeChart.destroy();
+            const trendBadge = document.getElementById('stock-badge-trend');
+            const icon = document.getElementById('trend-icon');
+            if (stock.is_positive) {
+                trendBadge.className = "hero-price__change up-bg";
+                icon.innerText = "▲";
+            } else {
+                trendBadge.className = "hero-price__change down-bg";
+                icon.innerText = "▼";
+            }
 
-            const ctx = document.getElementById('detailsChart').getContext('2d');
+            if (activeChart) activeChart.destroy();
+            const ctx = document.getElementById('priceChart').getContext('2d');
             activeChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: stock.history_dates,
                     datasets: [{
-                        label: 'Price (Past Month)',
+                        label: 'Close',
                         data: stock.history_prices,
                         borderColor: stock.is_positive ? '#00c805' : '#ff3b30',
-                        backgroundColor: 'rgba(255,255,255,0.01)',
-                        tension: 0.2
+                        backgroundColor: stock.is_positive ? 'rgba(74, 217, 161, 0.15)' : 'rgba(255, 59, 48, 0.15)',
+                        tension: 0.3,
+                        fill: true
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { color: 'rgba(255,255,255,0.08)' } }
+                    }
+                }
             });
         }
     </script>
