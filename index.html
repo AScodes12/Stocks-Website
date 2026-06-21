@@ -72,6 +72,7 @@
             font-size: 11px;
             padding: 2px 6px;
             transition: all 0.2s;
+            margin-left: 4px;
         }
         .ticker__remove:hover {
             background: var(--down-color);
@@ -269,8 +270,8 @@
 
                 <div class="dashboard-panel ai-dock">
                     <div class="ai-title">⚡ Autonomous Structural Driver Takeaway</div>
-                    <div style="font-size:13.5px; line-height:1.6; color:#cbd5e1;">
-                        System algorithms indicate this asset is trading with highly clustered volatility bounds. Technical trends suggest institutional positioning is fluctuating around the standard deviation averages.
+                    <div style="font-size:13.5px; line-height:1.6; color:#cbd5e1;" id="ai-takeaway-text">
+                        System algorithms are scanning server matrices for live telemetry data layers...
                     </div>
                 </div>
 
@@ -286,15 +287,15 @@
                     <h3>Wall Street Consensus Engine</h3>
                     <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:700;">
                         <span id="consensus-rating">Buy</span>
-                        <span style="color:var(--text-muted)" id="consensus-score">Mean score: 1.8</span>
+                        <span style="color:var(--text-muted)" id="consensus-score">Mean score: --</span>
                     </div>
                     <div class="gauge-track">
                         <div class="gauge-fill" id="consensus-fill"></div>
                     </div>
                     <div class="gauge-labels">
-                        <span>Strong Buy</span>
-                        <span>Hold</span>
                         <span>Underperform</span>
+                        <span>Hold</span>
+                        <span>Strong Buy</span>
                     </div>
                 </div>
 
@@ -329,7 +330,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
-        // PASTE YOUR LOCALTUNNEL LINK HERE
         const TUNNEL_URL = "https://slow-mirrors-boil.loca.lt";
 
         let globalData = {}; let activeChart = null; let currentActiveObject = null;
@@ -355,7 +355,6 @@
                 target.innerHTML = '<div class="ticker__item">Watchlist Empty. Search tickers to add assets.</div>';
                 return;
             }
-            // Loop data twice for continuous smooth scrolling effect
             const loops = [...Object.values(globalData), ...Object.values(globalData)];
             target.innerHTML = loops.map((stock, i) => `
                 <div class="ticker__item" onclick="event.stopPropagation(); renderCoreUI(globalData['${stock.symbol}'])">
@@ -431,7 +430,6 @@
             currentActiveObject = stock;
             document.getElementById('detail-container').style.display = 'block';
             
-            // Toggle "+ Track" visibility based on current presence
             if (globalData[stock.symbol]) {
                 document.getElementById('add-watchlist-btn').style.display = 'none';
             } else {
@@ -446,6 +444,7 @@
             document.getElementById('stock-change').innerText = stock.change;
             document.getElementById('stock-currency').innerText = `· ${stock.currency}`;
             document.getElementById('stock-summary').innerText = stock.summary;
+            document.getElementById('ai-takeaway-text').innerText = stock.ai_takeaway || "No technical telemetry computed for this asset cycle.";
 
             document.getElementById('m-cap').innerText = stock.market_cap;
             document.getElementById('m-pe').innerText = stock.pe_ratio;
@@ -470,9 +469,8 @@
             
             let scoreNum = parseFloat(stock.consensus);
             if (!isNaN(scoreNum)) {
-                let percentageFill = Math.min(Math.max(((scoreNum - 1) / 4) * 100, 0), 100);
-                let finalDirection = 100 - percentageFill;
-                document.getElementById('consensus-fill').style.width = `${Math.max(finalDirection, 5)}%`;
+                let percentageFill = ((5 - scoreNum) / 4) * 100;
+                document.getElementById('consensus-fill').style.width = `${Math.min(Math.max(percentageFill, 5), 100)}%`;
             } else {
                 document.getElementById('consensus-fill').style.width = '50%';
             }
@@ -511,11 +509,9 @@
                     const bullKeywords = ["surge", "beat", "rally", "growth", "raised", "upgrade", "higher", "gains", "buy", "bull", "soars", "jump", "positive", "profit", "win", "climb", "record", "outlook", "strong"];
                     const bearKeywords = ["drop", "miss", "plummet", "cut", "downgrade", "lower", "fall", "loss", "slump", "bear", "sinks", "slide", "negative", "warns", "plunge", "decline", "anxiety", "theft", "losses"];
                     
-                    if (bullKeywords.some(word => combinedText.includes(word))) {
-                        sent = "bullish";
-                    } else if (bearKeywords.some(word => combinedText.includes(word))) {
-                        sent = "bearish";
-                    } else {
+                    if (bullKeywords.some(word => combinedText.includes(word))) sent = "bullish";
+                    else if (bearKeywords.some(word => combinedText.includes(word))) sent = "bearish";
+                    else {
                         let hash = combinedText.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
                         if (hash % 3 === 0) sent = "bullish";
                         else if (hash % 3 === 1) sent = "bearish";
